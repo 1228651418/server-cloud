@@ -1,0 +1,72 @@
+spring:
+  profiles:
+    active: config1
+  application:
+    name: jqm-cloud-config
+  #security:
+    #user:
+      #name: config
+      #password: jqm1888
+  #sleuth:
+    #web:
+      #client:
+        #enabled: true
+    #sampler:
+      #probability: 1 # 将采样比例设置为 1.0，也就是全部都需要。默认是 0.1
+  #zipkin:
+    #base-url: http://192.168.188.64:9411/ # 指定了 Zipkin 服务器的地址,走mq上报不需要配置
+  rabbitmq:
+    host: 192.168.188.64
+    port: 5672
+    username: jqm
+    password: jqm1888
+    virtual-host: jqm_cloud_vhost
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 192.168.188
+    bus:
+      enabled: true
+      #跟踪总线事件
+      trace:
+        enabled: true
+    config:
+      label: master
+      server:
+        git:
+          # 配置仓库路径
+          uri: http://192.168.188.56:3000/carstrip/server-config.git
+          search-paths: /**
+          username: Bacel.Chen
+          password: 111111
+          basedir: /data/config-repo
+#        health:
+#          repositories:
+#            a-hello:
+#              label: master
+#              name: hello
+#              profiles: dev
+server:
+  port: 7200
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    healthcheck:
+      enabled: true
+    service-url:
+      defaultZone: http://eureka:jqm1888@eureka1:7000/eureka/,http://eureka:jqm1888@eureka2:7001/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always #显示详细信息
+---
+spring:
+  profiles: config2
+server:
+  port: 7201

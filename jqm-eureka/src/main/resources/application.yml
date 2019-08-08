@@ -1,0 +1,50 @@
+server:
+  port: 7000
+
+spring:
+  profiles: 
+    active: eureka1
+  application:
+    name: jqm-cloud-eureka
+  security:
+    user:
+      name: eureka
+      password: jqm1888
+
+eureka:
+  server:
+    enableSelfPreservation: false #关闭自我保护(超过200集群最好打开)
+    evictionIntervalTimerInMs: 4000 #清理间隔(单位毫秒，默认是60*1000)
+    # 节点间的读数据连接超时时间，默认200ms
+    # 如果其它微服务节点正在运行状态，重启eureka集群
+    # 微服务同时向eureka注册，节点间的数据连接，200ms内可能不够完成连接，导致循环超时
+    # 可调整加大此阈值
+    peerNodeReadTimeoutMs: 1000
+  instance:
+    preferIpAddress: true
+    hostname: eureka1
+  client:
+    # 由于该应用为注册中心，所以设置为false，代表不向注册中心注册自己
+    # 集群设置为true,默认true
+    #register-with-eureka: true
+    # 单节点，设置为false
+    # 集群需要同步其他eureka server节点设置为true,默认true
+    #fetch-registry: true
+    service-url:
+      # 注册服务中心地址
+      defaultZone: http://eureka:jqm1888@eureka2:7001/eureka/
+
+#java -jar jqm-eureka-0.0.1-SNAPSHOT.jar --spring.profiles.active=eureka2
+---
+spring:
+  profiles: eureka2
+  
+server:
+  port: 7001
+  
+eureka:
+  instance:
+    hostname: eureka2
+  client:
+    service-url:
+      defaultZone: http://eureka:jqm1888@eureka1:7000/eureka/

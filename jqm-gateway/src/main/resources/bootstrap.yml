@@ -1,0 +1,81 @@
+swagger:
+  api: "{'carstrip-uic':'用户中心', 'carstrip-hotel':'自驾酒店', 
+  'carstrip-scenic':'自驾景区', 'carstrip-shop':'自驾商城', 
+  'carstrip-partner':'商户平台', 'carstrip-pay':'支付服务', 
+  'carstrip-platform':'运营平台', 'carstrip-track':'线路服务'}"
+    
+server:
+  port: 7400
+spring:
+  redis:
+    host: 192.168.188.64
+    port: 6379
+    database: 0
+    timeout: 10s # 数据库连接超时时间，2.0 中该参数的类型为Duration，这里在配置的时候需要指明单位
+  application:
+    name: jqm-cloud-gateway
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 192.168.188
+    gateway:
+      globalcors: #跨域配置
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+            allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+      discovery: 
+        locator:  
+          enabled: true #默认根据服务名称转发所有
+          lowerCaseServiceId: true #小写兼容
+      default-filters:
+        - Elapsed=true
+      httpclient:
+        pool:
+          acquire-timeout: 10000
+#      routes:
+#        - id: carstrip
+#          uri: lb://carstrip
+#          order: 0
+#          predicates:
+#            - Path=/carstrip/**
+#          filters:
+#            - StripPrefix=1
+#            # -------
+#            - name: RequestRateLimiter
+#              args:
+#                key-resolver: '#{@ipKeyResolver}'
+#                redis-rate-limiter.replenishRate: 1
+#                redis-rate-limiter.burstCapacity: 5
+#            # -------
+#            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+#            - name: Hystrix
+#              args:
+#                name: fallbackcmd
+#                fallbackUri: forward:/fallback
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    healthcheck:
+      enabled: true
+    service-url:
+      defaultZone: http://eureka:jqm1888@eureka1:7000/eureka/,http://eureka:jqm1888@eureka2:7001/eureka/
+      
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    org.springframework.cloud: debug
+    com.jqm.gateway: debug
